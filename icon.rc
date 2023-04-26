@@ -1,0 +1,6 @@
+#ifndef _icon_rc
+#define _icon_rc
+
+MAINICON ICON "icon/icon.ico"
+
+#endif // _icon_rc
