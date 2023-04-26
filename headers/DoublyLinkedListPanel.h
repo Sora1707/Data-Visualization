@@ -48,6 +48,8 @@ public:
 	string GetFindCode(int value, bool fromBegin);
 	void SetCode(string code);
 	void DrawInstruction(int lineNumber);
+	void ReadFile();
+	void SaveFile();
 
 private:
 	// Init functions
@@ -93,6 +95,7 @@ private:
 	int length = MAX_LENGTH;
 	wxStaticText** array_boxes;
 	wxStaticText** index_texts;
+	int* temp_values;
 	
 	// Create
 	wxButton* createButton;

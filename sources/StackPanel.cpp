@@ -3,12 +3,15 @@
 #include "../headers/App.h"
 #include <wx/wx.h>
 #include <string>
+#include <fstream>
 
 #ifdef _WIN32
 #include <Windows.h>
 #else
 #include <unistd.h>
 #endif
+
+#define DATA_FILE "data/Stack.txt"
 
 using namespace std;
 
@@ -18,6 +21,7 @@ StackPanel::StackPanel(wxWindow* _parent) : wxPanel(_parent, wxID_ANY, wxDefault
 	this->SetBackgroundColour(wxColour("LightGrey"));
 	parent = _parent;
 
+	ReadFile();
 	CreateWidgets();
 	BindEventHandlers();
 }
@@ -84,6 +88,43 @@ void StackPanel::DrawInstruction(int lineNumber)
 	Sleep(delay_time);
 }
 
+void StackPanel::ReadFile()
+{
+	temp_values = new int[MAX_LENGTH];
+
+	length = MAX_LENGTH;
+	for (int i = 0; i < length; ++i)
+		temp_values[i] = i + 1;
+
+	ifstream input;
+	input.open(DATA_FILE);
+	if (!input) {
+		input.close();
+		return;
+	}
+
+	input >> length;
+	for (int i = 0; i < length; ++i)
+		input >> temp_values[i];
+
+	input.close();
+}
+
+void StackPanel::SaveFile()
+{
+	ofstream output;
+	output.open(DATA_FILE, ios::out | ios::trunc);
+	if (!output) {
+		output.close();
+		return;
+	}
+	output << length << "\n";
+	for (int i = 0; i < length; ++i)
+		output << array_boxes[i]->GetLabel() << " ";
+
+	output.close();
+}
+
 // Widgets
 
 void StackPanel::CreateWidgets()
@@ -100,13 +141,21 @@ void StackPanel::CreateWidgets()
 	for (int i = 0; i < MAX_LENGTH; ++i) {
 		int posX = START_X + BOX_WIDTH * i + ARROW_LENGTH * i;
 		int posY = START_Y;
+		int value = i >= length ? i : temp_values[i];
+
 
 		// New box
-		wxStaticText* box = new wxStaticText(this, wxID_ANY, to_string(10+i), wxPoint(posX, posY), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER | wxBORDER_SIMPLE);
+		wxStaticText* box = new wxStaticText(this, wxID_ANY, to_string(value), wxPoint(posX, posY), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER | wxBORDER_SIMPLE);
 		box->SetFont(sllFont);
 		box->SetForegroundColour(wxColour("Black"));
 		array_boxes[i] = box;
+
+		if (i >= length) {
+			box->Hide();
+		}
 	}
+	delete[] temp_values;
+
 	topText = new wxStaticText(this, wxID_ANY, "Top", wxPoint(START_X, START_Y - 30), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER);
 	topText->SetFont(smallFont);
 

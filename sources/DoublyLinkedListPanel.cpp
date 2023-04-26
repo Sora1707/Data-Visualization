@@ -3,12 +3,15 @@
 #include "../utility/Number/NumberUtil.h"
 #include <wx/wx.h>
 #include <string>
+#include <fstream>
 
 #ifdef _WIN32
 #include <Windows.h>
 #else
 #include <unistd.h>
 #endif
+
+#define DATA_FILE "data/DoublyLinkedList.txt"
 
 using namespace std;
 
@@ -18,6 +21,7 @@ DoublyLinkedListPanel::DoublyLinkedListPanel(wxWindow* _parent) : wxPanel(_paren
 	this->SetBackgroundColour(wxColour("LightGrey"));
 	parent = _parent;
 
+	ReadFile();
 	CreateWidgets();
 	BindEventHandlers();
 }
@@ -152,6 +156,42 @@ void DoublyLinkedListPanel::DrawInstruction(int lineNumber)
 	Sleep(delay_time);
 }
 
+void DoublyLinkedListPanel::ReadFile()
+{
+	temp_values = new int[MAX_LENGTH];
+
+	length = MAX_LENGTH;
+	for (int i = 0; i < length; ++i)
+		temp_values[i] = i + 1;
+
+	ifstream input;
+	input.open(DATA_FILE);
+	if (!input) {
+		input.close();
+		return;
+	}
+
+	input >> length;
+	for (int i = 0; i < length; ++i)
+		input >> temp_values[i];
+
+	input.close();
+}
+
+void DoublyLinkedListPanel::SaveFile()
+{
+	ofstream output;
+	output.open(DATA_FILE, ios::out | ios::trunc);
+	if (!output) {
+		output.close();
+		return;
+	}
+	output << length << "\n";
+	for (int i = 0; i < length; ++i)
+		output << array_boxes[i]->GetLabel() << " ";
+
+	output.close();
+}
 
 // Widgets
 
@@ -171,9 +211,10 @@ void DoublyLinkedListPanel::CreateWidgets()
 	for (int i = 0; i < MAX_LENGTH; ++i) {
 		int posX = START_X + BOX_WIDTH * i + ARROW_LENGTH * i;
 		int posY = START_Y;
+		int value = i >= length ? i : temp_values[i];
 
 		// New box
-		wxStaticText* box = new wxStaticText(this, wxID_ANY, to_string(10+i), wxPoint(posX, posY), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER | wxBORDER_SIMPLE);
+		wxStaticText* box = new wxStaticText(this, wxID_ANY, to_string(value), wxPoint(posX, posY), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER | wxBORDER_SIMPLE);
 		box->SetFont(sllFont);
 		box->SetForegroundColour(wxColour("Black"));
 		array_boxes[i] = box;
@@ -181,7 +222,13 @@ void DoublyLinkedListPanel::CreateWidgets()
 		// New index text
 		wxStaticText* index_text = new wxStaticText(this, wxID_ANY, to_string(i + 1), wxPoint(posX, posY - 30), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER);
 		index_texts[i] = index_text;
+
+		if (i >= length) {
+			box->Hide();
+			index_text->Hide();
+		}
 	}
+	delete[] temp_values;
 
 	// MOVING BOX (WHEN ADD)
 	addMovingBox = new wxStaticText(this, wxID_ANY, to_string(0), wxPoint(START_X, START_Y + 75), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER | wxBORDER_SIMPLE);

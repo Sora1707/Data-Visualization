@@ -165,6 +165,12 @@ void ArrayPanel::DrawInstruction(int lineNumber)
 
 void ArrayPanel::ReadFile()
 {
+	temp_values = new int[MAX_LENGTH];
+
+	length = MAX_LENGTH;
+	for (int i = 0; i < length; ++i)
+		temp_values[i] = i + 1;
+
 	ifstream input;
 	input.open(DATA_FILE);
 	if (!input) {
@@ -172,7 +178,6 @@ void ArrayPanel::ReadFile()
 		return;
 	}
 
-	temp_values = new int[MAX_LENGTH];
 	input >> length;
 	for (int i = 0; i < length; ++i) 
 		input >> temp_values[i];

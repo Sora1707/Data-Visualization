@@ -45,6 +45,8 @@ public:
 	string GetPushCode(int value);
 	void SetCode(string code);
 	void DrawInstruction(int lineNumber);
+	void ReadFile();
+	void SaveFile();
 
 private:
 	// Init functions
@@ -87,6 +89,7 @@ private:
 	int length = MAX_LENGTH;
 	wxStaticText** array_boxes;
 	wxStaticText* topText;
+	int* temp_values;
 
 	// Add Box when push
 	wxStaticText* addBox;

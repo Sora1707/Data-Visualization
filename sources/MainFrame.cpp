@@ -135,6 +135,10 @@ void MainFrame::SetTimeDelay(int delayTime)
 void MainFrame::OnClose(wxCloseEvent& event) {
 
 	arrayPanel->SaveFile();
+	sllPanel->SaveFile();
+	dllPanel->SaveFile();
+	queuePanel->SaveFile();
+	stackPanel->SaveFile();
 
 	arrayPanel->FreeMemory();
 	sllPanel->FreeMemory();
