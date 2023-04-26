@@ -38,6 +38,8 @@ public:
 	string GetFindCode(int value);
 	void SetCode(string code);
 	void DrawInstruction(int lineNumber);
+	void ReadFile();
+	void SaveFile();
 
 private:
 	// functions
@@ -65,6 +67,7 @@ private:
 	const int START_X = 100, START_Y = 100;
 	wxStaticText** array_boxes;
 	wxStaticText** index_texts;
+	int* temp_values;
 	
 	// Create
 	wxButton* createButton;

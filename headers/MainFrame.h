@@ -19,6 +19,14 @@ public:
 	MainFrame(const wxString& title);
 
 private:
+	/* 
+	POSITION
+		1. Array
+		2. Singly Linked List
+		3. Doubly Linked List
+		4. Stack
+		5. Queue
+	*/
 
 	// declare panels
 	MenuPanel* menuPanel;

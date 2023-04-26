@@ -4,20 +4,19 @@
 #include <wx/wx.h>
 #include <cstdlib>
 #include <vector>
+#include <fstream>
 
 MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title) {
 
-
+	CreateStatusBar(); // like cout for checking
 	CreateWidgets();
 	BindEventHandlers();
-	CreateStatusBar(); // like cout for checking
 }
 
 void MainFrame::CreateWidgets()
 {
 	// Define time for random number
 	srand(time(0));
-
 
 	// Initialize all panels
 	menuPanel = new MenuPanel(this);
@@ -103,12 +102,12 @@ void MainFrame::OnChangePanelButtonClicked(wxCommandEvent& event)
 {
 	auto* button = (wxButton*)event.GetEventObject();
 
+	auto id = button->GetId();
+
 	sizer->Detach(0);
 	for (auto panel : panels) {
 		panel->Hide();
 	}
-
-	auto id = button->GetId();
 
 	sizer->Prepend(panels[id], 1, wxGROW);
 	panels[id]->Show();
@@ -134,6 +133,8 @@ void MainFrame::SetTimeDelay(int delayTime)
 }
 
 void MainFrame::OnClose(wxCloseEvent& event) {
+
+	arrayPanel->SaveFile();
 
 	arrayPanel->FreeMemory();
 	sllPanel->FreeMemory();

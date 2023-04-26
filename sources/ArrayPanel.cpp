@@ -1,12 +1,15 @@
 #include "../headers/ArrayPanel.h"
 #include "../headers/App.h"
 #include "../utility/Number/NumberUtil.h"
+#include <fstream>
 
 #ifdef _WIN32
 #include <Windows.h>
 #else
 #include <unistd.h>
 #endif
+
+#define DATA_FILE "data/Array.txt"
 
 using namespace std;
 
@@ -16,6 +19,7 @@ ArrayPanel::ArrayPanel(wxWindow* _parent) : wxPanel(_parent, wxID_ANY, wxDefault
 	this->SetBackgroundColour(wxColour("LightGrey"));
 	parent = _parent;
 
+	ReadFile();
 	CreateWidgets();
 	BindEventHandlers();
 }
@@ -36,9 +40,10 @@ void ArrayPanel::CreateWidgets()
 	for (int i = 0; i < MAX_LENGTH; ++i) {
 		int posX = START_X + i * BOX_WIDTH;
 		int posY = START_Y;
+		int value = i >= length ? i : temp_values[i];
 
 		// New box
-		wxStaticText* box = new wxStaticText(this, wxID_ANY, to_string(10 + i), wxPoint(posX, posY), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER | wxBORDER_SIMPLE);
+		wxStaticText* box = new wxStaticText(this, wxID_ANY, to_string(value), wxPoint(posX, posY), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER | wxBORDER_SIMPLE);
 		box->SetFont(headerFont);
 		box->SetForegroundColour(wxColour("Black"));
 		array_boxes[i] = box;
@@ -47,7 +52,13 @@ void ArrayPanel::CreateWidgets()
 		wxStaticText* index_text = new wxStaticText(this, wxID_ANY, to_string(i + 1), wxPoint(posX, posY - 30), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER);
 		index_texts[i] = index_text;
 
+		if (i >= length) {
+			box->Hide();
+			index_text->Hide();
+		}
+
 	}
+	delete[] temp_values;
 
 	// 
 	createButton = new wxButton(this, wxID_ANY, "Create", wxPoint(100, 350));
@@ -150,6 +161,38 @@ void ArrayPanel::DrawInstruction(int lineNumber)
 	codeInstructor->Update();
 
 	Sleep(delay_time);
+}
+
+void ArrayPanel::ReadFile()
+{
+	ifstream input;
+	input.open(DATA_FILE);
+	if (!input) {
+		input.close();
+		return;
+	}
+
+	temp_values = new int[MAX_LENGTH];
+	input >> length;
+	for (int i = 0; i < length; ++i) 
+		input >> temp_values[i];
+
+	input.close();
+}
+
+void ArrayPanel::SaveFile()
+{
+	ofstream output;
+	output.open(DATA_FILE, ios::out | ios::trunc);
+	if (!output) {
+		output.close();
+		return;
+	}
+	output << length << "\n";
+	for (int i = 0; i < length; ++i)
+		output << array_boxes[i]->GetLabel() << " ";
+
+	output.close();
 }
 
 // Event Handlers
