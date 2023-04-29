@@ -43,6 +43,7 @@ public:
 	string GetCreateCode();
 	string GetPopCode();
 	string GetPushCode(int value);
+	string GetClearCode();
 	void SetCode(string code);
 	void DrawInstruction(int lineNumber);
 	void ReadFile();
@@ -62,6 +63,8 @@ private:
 	// Event Handlers
 	void OnPushButtonClicked(wxCommandEvent& event);
 	void OnPopButtonClicked(wxCommandEvent& event);
+	void OnClearButtonClicked(wxCommandEvent& event);
+	void OnRandomCreateButtonClicked(wxCommandEvent& event);
 
 	// Other function
 	void ChangeTexture(wxStaticText*& text, wxColour foregroundColor, wxColour backgroundColor);
@@ -94,12 +97,18 @@ private:
 	// Add Box when push
 	wxStaticText* addBox;
 
+	// Random
+	wxButton* randomCreateButton;
+
 	// Push
 	wxButton* pushButton;
 	wxSpinCtrl* pushValue;
 
 	// Pop
 	wxButton* popButton;
+
+	// Clear
+	wxButton* clearButton;
 
 	// Code
 	wxTextCtrl* codeDisplay;

@@ -66,6 +66,20 @@ string StackPanel::GetPushCode(int value)
 	return code;
 }
 
+string StackPanel::GetClearCode()
+{
+	string code =
+		"Node* cur = head\r\n"
+		"while (cur != nullptr) {\r\n"
+		"    Node* temp = cur;\r\n"
+		"    cur = cur->next;\r\n"
+		"    delete temp;\r\n"
+		"};\r\n"
+		"length = 0;\r\n"
+		;
+	return code;
+}
+
 void StackPanel::SetCode(string code)
 {
 	wxString codeText(code);
@@ -158,12 +172,16 @@ void StackPanel::CreateWidgets()
 
 	topText = new wxStaticText(this, wxID_ANY, "Top", wxPoint(START_X, START_Y - 30), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER);
 	topText->SetFont(smallFont);
+	if (length == 0) topText->Hide();
 
 	// ADD BOX (WHEN PUSH)
 	addBox = new wxStaticText(this, wxID_ANY, to_string(0), wxPoint(START_X, START_Y + 75), wxSize(BOX_WIDTH, -1), wxALIGN_CENTER | wxBORDER_SIMPLE);
 	addBox->SetFont(sllFont);
 	ChangeTexture(addBox, RED, LIGHT_YELLOW);
 	addBox->Hide();
+
+	// RANDOM CREATE
+	randomCreateButton = new wxButton(this, wxID_ANY, "Random", wxPoint(200, 475));
 
 	// PUSH
 	pushButton = new wxButton(this, wxID_ANY, "Push", wxPoint(200, 350));
@@ -172,6 +190,9 @@ void StackPanel::CreateWidgets()
 
 	// POP
 	popButton = new wxButton(this, wxID_ANY, "Pop", wxPoint(500, 350));
+
+	// CLEAR
+	clearButton = new wxButton(this, wxID_ANY, "Clear", wxPoint(500, 475));
 
 	// MENU
 	int MENU_ID = 0;
@@ -195,6 +216,9 @@ void StackPanel::BindEventHandlers()
 	
 	popButton->Bind(wxEVT_BUTTON, &StackPanel::OnPopButtonClicked, this);
 
+	clearButton->Bind(wxEVT_BUTTON, &StackPanel::OnClearButtonClicked, this);
+
+	randomCreateButton->Bind(wxEVT_BUTTON, &StackPanel::OnRandomCreateButtonClicked, this);
 }
 // Drawing 
 
@@ -301,13 +325,14 @@ void StackPanel::OnPushButtonClicked(wxCommandEvent& event)
 	array_boxes[length]->Show();
 
 	++length;
+	topText->Show();
 
 	codeInstructor->Hide();
 	
 	// Draw arrows
 	Refresh();
 	OnPaint(*drawTool);
-	delete drawTool;
+	if (drawTool) delete drawTool;
 
 	// End of prevent multiple calls;
 	wxGetApp().Yield();
@@ -359,7 +384,7 @@ void StackPanel::OnPopButtonClicked(wxCommandEvent& event)
 	Refresh();
 	Update();
 	OnPaint(*drawTool);
-	delete drawTool;	
+	if (drawTool) delete drawTool;
 
 	DrawInstruction(5);
 
@@ -371,6 +396,84 @@ void StackPanel::OnPopButtonClicked(wxCommandEvent& event)
 
 	isBusy = false;
 
+}
+
+void StackPanel::OnClearButtonClicked(wxCommandEvent& event)
+{
+	if (length == 0) {
+		wxLogStatus("The queue is empty!");
+		return;
+	}
+
+	static bool isBusy = false;
+
+	if (isBusy) return;
+
+	// Prevent multiple calls
+	isBusy = true;
+	clearButton->Disable();
+
+	SetCode(GetClearCode());
+	DrawInstruction(1);
+
+	while (length > 0) {
+		ChangeTexture(array_boxes[0], RED, LIGHT_YELLOW);
+
+		DrawInstruction(2);
+		DrawInstruction(3);
+		DrawInstruction(4);
+		DrawInstruction(5);
+
+		ChangeTexture(array_boxes[0], BLACK, LIGHT_GREY);
+
+		for (int i = 0; i < length - 1; ++i) {
+			array_boxes[i]->SetLabel(array_boxes[i + 1]->GetLabel());
+		}
+
+		array_boxes[length - 1]->Hide();
+
+		--length;
+	}
+
+	topText->Hide();
+	DrawInstruction(7);
+
+	// Draw arrows
+	Refresh();
+	Update();
+	OnPaint(*drawTool);
+	if (drawTool) delete drawTool;
+
+	codeInstructor->Hide();
+
+	// End of prevent multiple calls
+	wxGetApp().Yield();
+	clearButton->Enable();
+
+	isBusy = false;
+}
+
+void StackPanel::OnRandomCreateButtonClicked(wxCommandEvent& event)
+{
+	length = NumberUtil::getRandomInt(1, 10);
+	for (int i = 0; i < MAX_LENGTH; ++i) {
+		if (i >= length) {
+			array_boxes[i]->Hide();
+		}
+		else {
+			int value = NumberUtil::getRandomInt(1, 99);
+			wxString valueText(to_string(value));
+			array_boxes[i]->SetLabel(valueText);
+			array_boxes[i]->Show();
+		}
+	}
+	topText->Show();
+
+	//// Draw arrows
+	Refresh();
+	Update();
+	OnPaint(*drawTool);
+	//if (drawTool) delete drawTool;
 }
 
 void StackPanel::ChangeTexture(wxStaticText*& text, wxColour foregroundColour, wxColour backgroundColour)
