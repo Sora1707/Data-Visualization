@@ -134,7 +134,7 @@ string ArrayPanel::GetUpdateCode(int index, int value)
 string ArrayPanel::GetFindCode(int value)
 {
 	string code =
-		"for (int i = 0; i < " + to_string(length) + "; ++i) \r\n"
+		"for (int i = 1; i <= " + to_string(length) + "; ++i) \r\n"
 		"    if (a[i] == " + to_string(value) + ")\r\n" 
 		"        cout << i << endl;\r\n"
 	;

@@ -80,13 +80,13 @@ string SinglyLinkedListPanel::GetDeleteCode(int index)
 		"Node * cur = head;\r\n"
 		"int index = 1;\r\n"
 		"while (cur->next != nullptr) {\r\n"
-		"    if (i + 1 == " + to_string(index + 1) + ") {\r\n"
+		"    if (index + 1 == " + to_string(index + 1) + ") {\r\n"
 		"        Node* temp = cur->next\r\n"
 		"        cur->next = cur->next->next\r\n"
 		"        delete temp;\r\n"
 		"        break;\r\n"
 		"    }\r\n"
-		"    ++i;\r\n"
+		"    ++index;\r\n"
 		"    cur = cur->next;\r\n"
 		"}\r\n";
 	return code;
