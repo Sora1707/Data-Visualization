@@ -326,9 +326,9 @@ void QueuePanel::OnEnqueueButtonClicked(wxCommandEvent& event)
 	array_boxes[length]->Show();
 
 	++length;
+	topText->Show();
 
 	codeInstructor->Hide();
-	topText->Show();
 
 	// Draw arrows
 	Refresh();
@@ -410,7 +410,7 @@ void QueuePanel::OnClearButtonClicked(wxCommandEvent& event)
 
 	// Prevent multiple calls
 	isBusy = true;
-	dequeueButton->Disable();
+	clearButton->Disable();
 
 	SetCode(GetClearCode());
 	DrawInstruction(1);
@@ -447,7 +447,7 @@ void QueuePanel::OnClearButtonClicked(wxCommandEvent& event)
 
 	// End of prevent multiple calls
 	wxGetApp().Yield();
-	dequeueButton->Enable();
+	clearButton->Enable();
 
 	isBusy = false;
 }
@@ -472,7 +472,6 @@ void QueuePanel::OnRandomCreateButtonClicked(wxCommandEvent& event)
 	Refresh();
 	Update();
 	OnPaint(*drawTool);
-	delete drawTool;
 }
 
 void QueuePanel::ChangeTexture(wxStaticText*& text, wxColour foregroundColour, wxColour backgroundColour)
