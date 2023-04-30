@@ -31,6 +31,8 @@ void MainFrame::CreateWidgets()
 
 	queuePanel = new QueuePanel(this);
 
+	cllPanel = new CircularLinkedListPanel(this);
+
 	// Add all panels
 	panels.push_back(menuPanel);
 	panels.push_back(arrayPanel);
@@ -38,6 +40,7 @@ void MainFrame::CreateWidgets()
 	panels.push_back(dllPanel);
 	panels.push_back(stackPanel);
 	panels.push_back(queuePanel);
+	panels.push_back(cllPanel);
 
 	// Sizer init
 	sizer = new wxBoxSizer(wxVERTICAL);
@@ -75,6 +78,11 @@ void MainFrame::CreateMenu()
 	menuPanel->queueButton = new wxButton(menuPanel, queuePanel->panelId, queuePanel->name, wxPoint(100, 200), wxSize(-1, -1));
 	menuPanel->queueButton->Bind(wxEVT_BUTTON, &MainFrame::OnChangePanelButtonClicked, this);
 	queuePanel->menuButton->Bind(wxEVT_BUTTON, &MainFrame::OnChangePanelButtonClicked, this);
+
+	// Circular Linked List
+	menuPanel->cllButton = new wxButton(menuPanel, cllPanel->panelId, cllPanel->name, wxPoint(400, 300), wxSize(-1, -1));
+	menuPanel->cllButton->Bind(wxEVT_BUTTON, &MainFrame::OnChangePanelButtonClicked, this);
+	cllPanel->menuButton->Bind(wxEVT_BUTTON, &MainFrame::OnChangePanelButtonClicked, this);
 
 	// Set time delay RadioBox
 	SetTimeDelay(250);
@@ -130,6 +138,7 @@ void MainFrame::SetTimeDelay(int delayTime)
 	dllPanel->delay_time = delayTime;
 	stackPanel->delay_time = delayTime;
 	queuePanel->delay_time = delayTime;
+	cllPanel->delay_time = delayTime;
 }
 
 void MainFrame::OnClose(wxCloseEvent& event) {
@@ -139,12 +148,14 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 	dllPanel->SaveFile();
 	queuePanel->SaveFile();
 	stackPanel->SaveFile();
+	cllPanel->SaveFile();
 
 	arrayPanel->FreeMemory();
 	sllPanel->FreeMemory();
 	dllPanel->FreeMemory();
 	stackPanel->FreeMemory();
 	queuePanel->FreeMemory();
+	cllPanel->FreeMemory();
 
 	for (auto panel : panels) {
 		delete panel;

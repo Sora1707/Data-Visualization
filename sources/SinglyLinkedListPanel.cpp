@@ -35,7 +35,7 @@ void SinglyLinkedListPanel::FreeMemory()
 
 string SinglyLinkedListPanel::GetCreateCode()
 {
-	return "// Singly Linked List";
+	return "// " + name;
 }
 
 string SinglyLinkedListPanel::GetUpdateCode(int index, int value)

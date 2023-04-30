@@ -36,6 +36,7 @@ public:
 	wxButton* dllButton;
 	wxButton* stackButton;
 	wxButton* queueButton;
+	wxButton* cllButton;
 
 	// Time set radio box
 	wxArrayString timeDelayChoices;

@@ -1,4 +1,4 @@
-#include "../headers/DoublyLinkedListPanel.h"
+#include "../headers/CircularLinkedListPanel.h"
 #include "../headers/App.h"
 #include "../utility/Number/NumberUtil.h"
 #include <wx/wx.h>
@@ -11,11 +11,11 @@
 #include <unistd.h>
 #endif
 
-#define DATA_FILE "data/DoublyLinkedList.txt"
+#define DATA_FILE "data/CircularLinkedList.txt"
 
 using namespace std;
 
-DoublyLinkedListPanel::DoublyLinkedListPanel(wxWindow* _parent) : wxPanel(_parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL)
+CircularLinkedListPanel::CircularLinkedListPanel(wxWindow* _parent) : wxPanel(_parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL)
 {
 	this->SetFont(smallFont);
 	this->SetBackgroundColour(wxColour("LightGrey"));
@@ -26,36 +26,36 @@ DoublyLinkedListPanel::DoublyLinkedListPanel(wxWindow* _parent) : wxPanel(_paren
 	BindEventHandlers();
 }
 
-void DoublyLinkedListPanel::FreeMemory()
+void CircularLinkedListPanel::FreeMemory()
 {
 	delete drawTool;
 	delete[] index_texts;
 	delete[] array_boxes;
 }
 
-string DoublyLinkedListPanel::GetCreateCode()
+string CircularLinkedListPanel::GetCreateCode()
 {
 	return "// " + name;
 }
 
-string DoublyLinkedListPanel::GetUpdateCode(int index, int value)
+string CircularLinkedListPanel::GetUpdateCode(int index, int value)
 {
 	string code =
-		"Node * cur = head;\r\n"
-		"int i = 1;\r\n"
-		"while (cur != nullptr) {\r\n"
-		"    if (i == " + to_string(index) + ") {\r\n"
-		"        cur->value = " + to_string(value) + ";\r\n"
-		"        break;\r\n"
-		"    }\r\n"
-		"    ++i;\r\n"
-		"    cur = cur->next;\r\n"
-		"}\r\n"
-		;
+	"Node * cur = head;\r\n"
+	"int i = 1;\r\n"
+	"while (cur != nullptr) {\r\n"
+	"    if (i == " + to_string(index) + ") {\r\n"
+	"        cur->value = " + to_string(value) + ";\r\n"
+	"        break;\r\n"
+	"    }\r\n"
+	"    ++i;\r\n"
+	"    cur = cur->next;\r\n"
+	"}\r\n"
+	;
 	return code;
 }
 
-string DoublyLinkedListPanel::GetAddCode(int index, int value)
+string CircularLinkedListPanel::GetAddCode(int index, int value)
 {
 	string code =
 		"Node * cur = head;\r\n"
@@ -74,25 +74,25 @@ string DoublyLinkedListPanel::GetAddCode(int index, int value)
 	return code;
 }
 
-string DoublyLinkedListPanel::GetDeleteCode(int index)
+string CircularLinkedListPanel::GetDeleteCode(int index)
 {
 	string code =
 		"Node * cur = head;\r\n"
 		"int index = 1;\r\n"
 		"while (cur->next != nullptr) {\r\n"
-		"    if (i + 1 == " + to_string(index + 1) + ") {\r\n"
+		"    if (index + 1 == " + to_string(index + 1) + ") {\r\n"
 		"        Node* temp = cur->next\r\n"
 		"        cur->next = cur->next->next\r\n"
 		"        delete temp;\r\n"
 		"        break;\r\n"
 		"    }\r\n"
-		"    ++i;\r\n"
+		"    ++index;\r\n"
 		"    cur = cur->next;\r\n"
 		"}\r\n";
 	return code;
 }
 
-string DoublyLinkedListPanel::GetDeleteCodeByValue(int value)
+string CircularLinkedListPanel::GetDeleteCodeByValue(int value)
 {
 	string code =
 		"Node * cur = head;\r\n"
@@ -107,34 +107,19 @@ string DoublyLinkedListPanel::GetDeleteCodeByValue(int value)
 	return code;
 }
 
-string DoublyLinkedListPanel::GetFindCode(int value, bool fromBegin)
+string CircularLinkedListPanel::GetFindCode(int value)
 {
-	string code;
-
-	if (fromBegin) {
-		code =
-			"Node * cur = head;\r\n"
-			"while (cur != nullptr) {\r\n"
-			"    if (cur->value == " + to_string(value) + ")\r\n"
-			"        cout << cur->index;\r\n"
-			"    cur = cur->next;\r\n"
-			"}\r\n";
-	}
-	else {
-		code =
-			"Node * cur = tail;\r\n"
-			"while (cur != nullptr) {\r\n"
-			"    if (cur->value == " + to_string(value) + ")\r\n"
-			"        cout << cur->index;\r\n"
-			"    cur = cur->prev;\r\n"
-			"}\r\n";
-	}
-
-	
+	string code =
+		"Node * cur = head;\r\n"
+		"while (cur != nullptr) {\r\n"
+		"    if (cur->value == " + to_string(value) + ")\r\n"
+		"        cout << cur->index;\r\n"
+		"    cur = cur->next;\r\n"
+		"}\r\n";
 	return code;
 }
 
-void DoublyLinkedListPanel::SetCode(string code)
+void CircularLinkedListPanel::SetCode(string code)
 {
 	wxString codeText(code);
 	codeDisplay->SetLabel(codeText);
@@ -142,7 +127,7 @@ void DoublyLinkedListPanel::SetCode(string code)
 	codeDisplay->Update();
 }
 
-void DoublyLinkedListPanel::DrawInstruction(int lineNumber)
+void CircularLinkedListPanel::DrawInstruction(int lineNumber)
 {
 	int posx = 780;
 	int posy = 102 + (lineNumber - 1) * 20;
@@ -156,7 +141,7 @@ void DoublyLinkedListPanel::DrawInstruction(int lineNumber)
 	Sleep(delay_time);
 }
 
-void DoublyLinkedListPanel::ReadFile()
+void CircularLinkedListPanel::ReadFile()
 {
 	temp_values = new int[MAX_LENGTH];
 
@@ -178,7 +163,7 @@ void DoublyLinkedListPanel::ReadFile()
 	input.close();
 }
 
-void DoublyLinkedListPanel::SaveFile()
+void CircularLinkedListPanel::SaveFile()
 {
 	ofstream output;
 	output.open(DATA_FILE, ios::out | ios::trunc);
@@ -195,7 +180,7 @@ void DoublyLinkedListPanel::SaveFile()
 
 // Widgets
 
-void DoublyLinkedListPanel::CreateWidgets()
+void CircularLinkedListPanel::CreateWidgets()
 {
 	// TITLE
 	wxString titleText = wxString(name);
@@ -283,11 +268,6 @@ void DoublyLinkedListPanel::CreateWidgets()
 	new wxStaticText(this, wxID_ANY, "Value", wxPoint(650, 350));
 	findValue = new wxSpinCtrl(this, wxID_ANY, "", wxPoint(700, 350), wxSize(50, -1), wxALIGN_LEFT, MIN_VALUE, MAX_VALUE);
 
-	findChoices.Add("From Front");
-	findChoices.Add("From Back");
-
-	findRadioBox = new wxRadioBox(this, wxID_ANY, "", wxPoint(650, 450), wxSize(-1, -1), findChoices, 0, wxRA_SPECIFY_ROWS);
-
 	// MENU
 	int MENU_ID = 0;
 	menuButton = new wxButton(this, MENU_ID, "Menu", wxPoint(10, 10));
@@ -302,61 +282,68 @@ void DoublyLinkedListPanel::CreateWidgets()
 
 // Binding Event
 
-void DoublyLinkedListPanel::BindEventHandlers()
+void CircularLinkedListPanel::BindEventHandlers()
 {
-	this->Bind(wxEVT_PAINT, &DoublyLinkedListPanel::paintEvent, this);
+	this->Bind(wxEVT_PAINT, &CircularLinkedListPanel::paintEvent, this);
 
-	createButton->Bind(wxEVT_BUTTON, &DoublyLinkedListPanel::OnCreateButtonClicked, this);
+	createButton->Bind(wxEVT_BUTTON, &CircularLinkedListPanel::OnCreateButtonClicked, this);
 
-	updateButton->Bind(wxEVT_BUTTON, &DoublyLinkedListPanel::OnUpdateButtonClicked, this);
+	updateButton->Bind(wxEVT_BUTTON, &CircularLinkedListPanel::OnUpdateButtonClicked, this);
 	
-	addButton->Bind(wxEVT_BUTTON, &DoublyLinkedListPanel::OnAddButtonClicked, this);
+	addButton->Bind(wxEVT_BUTTON, &CircularLinkedListPanel::OnAddButtonClicked, this);
 	
-	deleteButton->Bind(wxEVT_BUTTON, &DoublyLinkedListPanel::OnDeleteButtonClicked, this);
+	deleteButton->Bind(wxEVT_BUTTON, &CircularLinkedListPanel::OnDeleteButtonClicked, this);
 
-	findButton->Bind(wxEVT_BUTTON, &DoublyLinkedListPanel::OnFindButtonClicked, this);
+	findButton->Bind(wxEVT_BUTTON, &CircularLinkedListPanel::OnFindButtonClicked, this);
 }
 
 // Drawing 
 
-void DoublyLinkedListPanel::OnPaint(wxDC& dc)
+void CircularLinkedListPanel::OnPaint(wxDC& dc)
 {
 	// Clear all the arrows
 	dc.Clear();
 
 	int x1, x2;
-	// Not draw the last arrow
-	for (int i = 0; i < length - 1; ++i) {
+	
+	for (int i = 0; i < length; ++i) {
 		x1 = START_X + BOX_WIDTH * (i + 1) + ARROW_LENGTH * i;
 		x2 = x1 + ARROW_LENGTH;
-		drawArrowHorizontal(dc, START_Y + BOX_WIDTH / 3, x1, x2, ARROW_THICKNESS);
-		drawArrowHorizontal(dc, START_Y + BOX_WIDTH * 2 / 3, x2, x1, ARROW_THICKNESS);
-	}
+		if (i != length - 1) {
+			drawArrowHorizontal(dc, START_Y + BOX_WIDTH / 2, x1, x2, ARROW_THICKNESS);
+		}
+		else {
+			int x0 = START_X + BOX_WIDTH / 2;
+			int y0 = START_Y + BOX_WIDTH;
 
-	if (length > 0) {
-		x1 = START_X;
-		x2 = x1 - ARROW_LENGTH;
-		drawArrowHorizontal(dc, START_Y + BOX_WIDTH * 2 / 3, x1, x2, ARROW_THICKNESS);
-
-		x1 = START_X + BOX_WIDTH * length + ARROW_LENGTH * (length - 1);
-		x2 = x1 + ARROW_LENGTH;
-		drawArrowHorizontal(dc, START_Y + BOX_WIDTH / 3, x1, x2, ARROW_THICKNESS);
+			drawLine(dc, x1, START_Y + BOX_WIDTH / 2, x2 - 15, START_Y + BOX_WIDTH / 2, ARROW_THICKNESS);
+			drawLine(dc, x2 - 15, START_Y + BOX_WIDTH / 2, x2 - 15, y0 + 25, ARROW_THICKNESS);
+			drawLine(dc, x2 - 15, y0 + 25, x0, y0 + 25, ARROW_THICKNESS);
+			drawArrowVertical(dc, x0, y0 + 25, y0, ARROW_THICKNESS);
+		}
 	}
 }
 
-void DoublyLinkedListPanel::paintEvent(wxPaintEvent& evt)
+void CircularLinkedListPanel::paintEvent(wxPaintEvent& evt)
 {
 	drawTool = new wxPaintDC(this);
 	OnPaint(*drawTool);
 }
 
-void DoublyLinkedListPanel::paintNow()
+void CircularLinkedListPanel::paintNow()
 {
 	wxClientDC dc(this);
 	OnPaint(dc);
 }
 
-void DoublyLinkedListPanel::drawArrowHorizontal(wxDC& dc, int y, int x1, int x2, int thickness)
+void CircularLinkedListPanel::drawLine(wxDC& dc, int x1, int y1, int x2, int y2, int thickness)
+{
+	dc.SetBrush(*wxBLACK_BRUSH);
+	dc.SetPen(wxPen(wxColour("Black"), thickness));
+	dc.DrawLine(x1, y1, x2, y2);;
+}
+
+void CircularLinkedListPanel::drawArrowHorizontal(wxDC& dc, int y, int x1, int x2, int thickness)
 {
 	// draw an arrow
 
@@ -382,9 +369,34 @@ void DoublyLinkedListPanel::drawArrowHorizontal(wxDC& dc, int y, int x1, int x2,
 	dc.DrawPolygon(3, list);
 }
 
+void CircularLinkedListPanel::drawArrowVertical(wxDC& dc, int x, int y1, int y2, int thickness)
+{
+	// draw an arrow
+
+	dc.SetBrush(*wxBLACK_BRUSH);
+	dc.SetPen(wxPen(wxColour("Black"), thickness));
+	dc.DrawLine(x, y1, x, y2);;
+	wxPoint list[3];
+
+	// Upwards
+	if (y1 < y2) {
+		list[0] = wxPoint(x - thickness, y2 - thickness * 3);
+		list[1] = wxPoint(x + thickness, y2 - thickness * 3);
+		list[2] = wxPoint(x, y2);
+	}
+	// Downwards
+	else {
+		list[0] = wxPoint(x - thickness, y2 + thickness * 3);
+		list[1] = wxPoint(x + thickness, y2 + thickness * 3);
+		list[2] = wxPoint(x, y2);
+	}
+
+	dc.DrawPolygon(3, list);
+}
+
 // Event Handlers
 
-void DoublyLinkedListPanel::OnCreateButtonClicked(wxCommandEvent& event)
+void CircularLinkedListPanel::OnCreateButtonClicked(wxCommandEvent& event)
 {
 	/* PREVENT MUTIPLE CALLS */
 	static bool isBusy = false;
@@ -399,7 +411,7 @@ void DoublyLinkedListPanel::OnCreateButtonClicked(wxCommandEvent& event)
 
 	length = arr_length;
 
-	for (int i = 0; i < MAX_LENGTH; ++i) {
+	for (int i = 0; i < MAX_LENGTH; ++i)  {
 
 		if (i >= length) {
 			array_boxes[i]->Hide();
@@ -426,7 +438,7 @@ void DoublyLinkedListPanel::OnCreateButtonClicked(wxCommandEvent& event)
 	isBusy = false;
 }
 
-void DoublyLinkedListPanel::OnUpdateButtonClicked(wxCommandEvent& event)
+void CircularLinkedListPanel::OnUpdateButtonClicked(wxCommandEvent& event)
 {
 	/* PREVENT MUTIPLE CALLS */
 	static bool isBusy = false;
@@ -467,6 +479,7 @@ void DoublyLinkedListPanel::OnUpdateButtonClicked(wxCommandEvent& event)
 			}
 
 			ChangeTexture(array_boxes[i], BLACK, LIGHT_GREY);
+
 		}
 	}
 
@@ -479,7 +492,7 @@ void DoublyLinkedListPanel::OnUpdateButtonClicked(wxCommandEvent& event)
 	isBusy = false;
 }
 
-void DoublyLinkedListPanel::OnAddButtonClicked(wxCommandEvent& event)
+void CircularLinkedListPanel::OnAddButtonClicked(wxCommandEvent& event)
 {
 	int index = addIndex->GetValue() - 1;
 
@@ -514,7 +527,7 @@ void DoublyLinkedListPanel::OnAddButtonClicked(wxCommandEvent& event)
 	addMovingBox->Refresh();
 	addMovingBox->Update();
 	ChangePosition(addMovingBox, wxPoint(START_X, START_Y + 75));
-
+	
 
 	int ending = index;
 	// Animation
@@ -522,7 +535,7 @@ void DoublyLinkedListPanel::OnAddButtonClicked(wxCommandEvent& event)
 		ending = index;
 	}
 	else if (type.IsSameAs("After")) {
-
+		
 		ending = index + 1;
 	}
 
@@ -532,7 +545,7 @@ void DoublyLinkedListPanel::OnAddButtonClicked(wxCommandEvent& event)
 
 		posX = START_X + BOX_WIDTH * i + ARROW_LENGTH * i;
 		ChangePosition(addMovingBox, wxPoint(posX, posY));
-
+		
 		if (i != ending) {
 			DrawInstruction(4);
 			DrawInstruction(10);
@@ -573,7 +586,7 @@ void DoublyLinkedListPanel::OnAddButtonClicked(wxCommandEvent& event)
 	isBusy = false;
 }
 
-void DoublyLinkedListPanel::OnDeleteButtonClicked(wxCommandEvent& event)
+void CircularLinkedListPanel::OnDeleteButtonClicked(wxCommandEvent& event)
 {
 	int index = deleteIndex->GetValue() - 1;
 	int value = deleteValue->GetValue();
@@ -599,7 +612,7 @@ void DoublyLinkedListPanel::OnDeleteButtonClicked(wxCommandEvent& event)
 
 	if (type.IsSameAs("Index")) {
 		SetCode(GetDeleteCode(index + 1));
-
+		
 		DrawInstruction(3);
 
 		for (int i = 0; i <= index; ++i) {
@@ -625,7 +638,7 @@ void DoublyLinkedListPanel::OnDeleteButtonClicked(wxCommandEvent& event)
 
 		ChangeTexture(array_boxes[index], BLACK, LIGHT_GREY);
 	}
-
+	
 	else if (type.IsSameAs("Value")) {
 		SetCode(GetDeleteCodeByValue(value));
 
@@ -645,7 +658,7 @@ void DoublyLinkedListPanel::OnDeleteButtonClicked(wxCommandEvent& event)
 				DrawInstruction(5);
 				DrawInstruction(6);
 			}
-			else {
+			else { 
 				DrawInstruction(8);
 				ChangeTexture(array_boxes[i], BLACK, LIGHT_GREY);
 			}
@@ -668,7 +681,7 @@ void DoublyLinkedListPanel::OnDeleteButtonClicked(wxCommandEvent& event)
 		index_texts[length - 1]->Hide();
 		--length;
 	}
-
+	
 	else if (type.IsSameAs("Value")) {
 		int* temp = new int[length];
 
@@ -707,7 +720,7 @@ void DoublyLinkedListPanel::OnDeleteButtonClicked(wxCommandEvent& event)
 	deleteButton->Enable();
 }
 
-void DoublyLinkedListPanel::OnFindButtonClicked(wxCommandEvent& event)
+void CircularLinkedListPanel::OnFindButtonClicked(wxCommandEvent& event)
 {
 	/* PREVENT MUTIPLE CALLS */
 	static bool isBusy = false;
@@ -717,24 +730,13 @@ void DoublyLinkedListPanel::OnFindButtonClicked(wxCommandEvent& event)
 	isBusy = true;
 	findButton->Disable();
 
-	wxString type = findRadioBox->GetStringSelection();
 	string value = to_string(findValue->GetValue());
 	bool isFound = false;
 
-	int begin = 0;
-	int end = length;
+	SetCode(GetFindCode(findValue->GetValue()));
+	DrawInstruction(2);
 
-	if (type.IsSameAs("From Back")) {
-		end = -1;
-		begin = length - 1;
-		SetCode(GetFindCode(findValue->GetValue(), false));
-	}
-	else {
-		SetCode(GetFindCode(findValue->GetValue(), true));
-	}
-
-	for (int i = begin; i != end; i += (begin <= end ? 1 : -1)) {
-
+	for (int i = 0; i < length; ++i) {
 		ChangeTexture(array_boxes[i], RED, LIGHT_YELLOW);
 
 		DrawInstruction(3);
@@ -777,7 +779,7 @@ void DoublyLinkedListPanel::OnFindButtonClicked(wxCommandEvent& event)
 	isBusy = false;
 }
 
-void DoublyLinkedListPanel::ChangeTexture(wxStaticText*& text, wxColour foregroundColour, wxColour backgroundColour)
+void CircularLinkedListPanel::ChangeTexture(wxStaticText*& text, wxColour foregroundColour, wxColour backgroundColour)
 {
 	text->SetForegroundColour(foregroundColour);
 	text->SetBackgroundColour(backgroundColour);
@@ -785,23 +787,27 @@ void DoublyLinkedListPanel::ChangeTexture(wxStaticText*& text, wxColour foregrou
 	text->Update();
 }
 
-void DoublyLinkedListPanel::ChangePosition(wxStaticText*& text, wxPoint pos)
+void CircularLinkedListPanel::ChangePosition(wxStaticText*& text, wxPoint pos)
 {
 	text->SetPosition(pos);
 	text->Refresh();
 	text->Update();
 }
 
-void DoublyLinkedListPanel::AddNewBoxesAt(int index, wxStaticText*& newText)
+void CircularLinkedListPanel::AddNewBoxesAt(int index, wxStaticText*& newText)
 {
 	if (length == MAX_LENGTH) return;
 
 	for (int i = length; i > index; --i) {
 		array_boxes[i]->SetLabel(array_boxes[i - 1]->GetLabel());
+		array_boxes[i]->Update();
 	}
 	array_boxes[index]->SetLabel(newText->GetLabel());
+	array_boxes[index]->Update();
 
 	array_boxes[length]->Show();
+	array_boxes[length]->Update();
 	index_texts[length]->Show();
+	index_texts[length]->Update();
 	++length;
 }

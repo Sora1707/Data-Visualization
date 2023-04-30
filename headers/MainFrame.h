@@ -10,6 +10,7 @@
 #include "../headers/DoublyLinkedListPanel.h"
 #include "../headers/StackPanel.h"
 #include "../headers/QueuePanel.h"
+#include "../headers/CircularLinkedListPanel.h"
 
 using namespace std;
 
@@ -26,6 +27,7 @@ private:
 		3. Doubly Linked List
 		4. Stack
 		5. Queue
+		6. Circular Linked List
 	*/
 
 	// declare panels
@@ -35,6 +37,7 @@ private:
 	DoublyLinkedListPanel* dllPanel;
 	StackPanel* stackPanel;
 	QueuePanel* queuePanel;
+	CircularLinkedListPanel* cllPanel;
 
 	vector <wxPanel*> panels;
 
